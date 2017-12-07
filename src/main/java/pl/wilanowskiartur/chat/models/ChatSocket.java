@@ -11,6 +11,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import java.util.List;
 @EnableWebSocket
 public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigurer{
 
-    List<UserModel> userList;
+    private List<UserModel> userList;
 
     public ChatSocket(){
         userList = new ArrayList<>();
@@ -31,7 +33,31 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        sendMessageToAll(message.getPayload() + "\n");
+
+        UserModel sender = findUserModel(session);
+        if (sender.getNickname() == null){
+            sender.setNickname(message.getPayload());
+            System.out.println("Ustawiono Twój nick na: " + message.getPayload());
+            return;
+        }
+
+
+        sendMessageToAll(generatePrefix(sender) + message.getPayload());
+    }
+
+    private String generatePrefix(UserModel userModel) {
+        return "<" + getTime() + ">" + " " + userModel.getNickname() +": ";
+    }
+
+    private String getTime() {
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+    }
+
+    private UserModel findUserModel(WebSocketSession session) {
+        return userList.stream()
+                .filter(s -> s.getSession().equals(session))
+                .findAny()
+                .get();
     }
 
     private void sendMessageToAll(String message) {
@@ -40,14 +66,15 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        UserModel sender = new UserModel(session);
         userList.add(new UserModel(session));
+
+        sender.sendMessage("Witaj w komunikatorze!");
+        sender.sendMessage("Twoja pierwsza wiadomość będzie Twoim nickiem!");
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        userList.remove(userList.stream()
-                .filter(s -> s.getSession().equals(session))
-                .findAny()
-                .get());
+        userList.remove(findUserModel(session));
     }
 }
