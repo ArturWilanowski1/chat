@@ -1,6 +1,5 @@
 package pl.wilanowskiartur.chat.models;
 
-import org.apache.catalina.User;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -9,8 +8,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import pl.wilanowskiartur.chat.models.commands.CommandFactory;
 
-import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,9 +20,12 @@ import java.util.List;
 public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigurer{
 
     private List<UserModel> userList;
+    private CommandFactory commandFactory;
+
 
     public ChatSocket(){
         userList = new ArrayList<>();
+        commandFactory = new CommandFactory(userList);
     }
 
     @Override
@@ -37,12 +39,22 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
         UserModel sender = findUserModel(session);
         if (sender.getNickname() == null){
             sender.setNickname(message.getPayload());
-            System.out.println("Ustawiono Twój nick na: " + message.getPayload());
+            sender.sendMessage("Ustawiono Twój nick na: " + message.getPayload());
+            sendMessageToAllWithoutMe(sender,"Użytkownik " + message.getPayload() + " dołączył");
             return;
         }
 
+        if (commandFactory.parseCommand(sender, message.getPayload() )) {
+            return;
+        }
 
         sendMessageToAll(generatePrefix(sender) + message.getPayload());
+    }
+
+    private void sendMessageToAllWithoutMe(UserModel sender, String s) {
+        userList.stream()
+                .filter(user -> !user.equals(sender))
+                .forEach(user -> user.sendMessage(s));
     }
 
     private String generatePrefix(UserModel userModel) {
@@ -50,7 +62,7 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
     }
 
     private String getTime() {
-        return LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     private UserModel findUserModel(WebSocketSession session) {
@@ -75,6 +87,10 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        UserModel userModel = findUserModel(session);
+        if (userModel.getNickname() != null) {
+            sendMessageToAllWithoutMe(userModel, "Użytkownik " + userModel.getNickname() + " opuścił chat!");
+            }
         userList.remove(findUserModel(session));
     }
 }
