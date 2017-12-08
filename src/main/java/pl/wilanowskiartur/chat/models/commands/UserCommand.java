@@ -7,7 +7,7 @@ import java.util.List;
 public class UserCommand implements Command {
     @Override
     public void parseCommand(UserModel model, List<UserModel> userList, String... args) {
-        userList.forEach(s -> model.sendMessage("~ " + s.getNickname()));
+        userList.forEach(s -> model.sendMessagePacket("~ " + s.getNickname()));
     }
 
     @Override

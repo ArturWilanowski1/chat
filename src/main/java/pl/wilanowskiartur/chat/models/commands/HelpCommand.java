@@ -10,9 +10,9 @@ public class HelpCommand implements Command{
 
     @Override
     public void parseCommand(UserModel model, List<UserModel> userList, String... args) {
-        model.sendMessage("Lista komend: ");
+        model.sendMessagePacket("Lista komend: ");
         for (Map.Entry<String, Command> stringCommandEntry : CommandFactory.getCommandMap().entrySet()) {
-            model.sendMessage("--" + stringCommandEntry.getKey() + "-" + stringCommandEntry.getValue().error());
+            model.sendMessagePacket("--" + stringCommandEntry.getKey() + "-" + stringCommandEntry.getValue().error());
         }
     }
 

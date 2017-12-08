@@ -19,7 +19,7 @@ public class WarningCommand implements Command{
                 .findAny();
 
         if(userModel.isPresent()){
-            userModel.get().sendMessage("Otrzymałeś ostrzeżenie od "+model.getNickname()+" \n");
+            userModel.get().sendMessagePacket("Otrzymałeś ostrzeżenie od "+model.getNickname()+" \n");
         }
     }
 

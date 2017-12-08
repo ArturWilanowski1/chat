@@ -19,12 +19,12 @@ public class PmCommand implements Command {
         args[0] = "";
 
         if (toWho.isPresent()){
-            toWho.get().sendMessage("---> (" + sender.getNickname() + "): "
+            toWho.get().sendMessagePacket("---> (" + sender.getNickname() + "): "
                     + Arrays.stream(args).collect(Collectors.joining(" ")));
 
             sender.addPrivateMessage();
         }else {
-            sender.sendMessage("Taki user nie istnieje!");
+            sender.sendMessagePacket("Taki user nie istnieje!");
         }
     }
 

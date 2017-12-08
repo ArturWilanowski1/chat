@@ -23,7 +23,7 @@ public class KickCommand implements Command {
                 e.printStackTrace();
             }
         }else {
-            sender.sendMessage("Taki user nie istnieje!");
+            sender.sendMessagePacket("Taki user nie istnieje!");
         }
     }
 

@@ -34,14 +34,14 @@ public class CommandFactory {
         String[] args = Arrays.copyOfRange(parts, 1, parts.length);
         String commandAlone = parts[0].substring(1, parts[0].length());
         if (!stringCommandMap.containsKey(commandAlone)){
-            userModel.sendMessage("Taka komenda nie istnieje!");
+            userModel.sendMessagePacket("Taka komenda nie istnieje!");
             return true;
         }
 
         Command command = stringCommandMap.get(commandAlone);
         if (command.argsCount() != -1){
             if (command.argsCount() != args.length){
-                userModel.sendMessage(command.error());
+                userModel.sendMessagePacket(command.error());
                 return true;
             }
         }
