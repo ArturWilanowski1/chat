@@ -49,6 +49,7 @@ public class ChatSocket extends TextWebSocketHandler implements WebSocketConfigu
         }
 
         sendMessageToAll(generatePrefix(sender) + message.getPayload());
+        sender.addGlobalMessage();
     }
 
     private void sendMessageToAllWithoutMe(UserModel sender, String s) {

@@ -10,11 +10,31 @@ public class UserModel {
     private String nickname;
     private WebSocketSession session;
 
+    private int sentPrivate;
+    private int sentGlobal;
+
+
+
     public UserModel(WebSocketSession session) {
         this.session = session;
         this.nickname = null;       //todo convert nickname to Optional
     }
 
+    public int getSentPrivate() {
+        return sentPrivate;
+    }
+
+    public int getSentGlobal() {
+        return sentGlobal;
+    }
+
+    public void addPrivateMessage(){
+        sentPrivate += 1;
+    }
+
+    public void addGlobalMessage(){
+        sentGlobal += 1;
+    }
 
     public String getNickname() {
         return nickname;
