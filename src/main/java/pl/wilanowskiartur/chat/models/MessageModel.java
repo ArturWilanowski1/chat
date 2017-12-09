@@ -9,7 +9,7 @@ public class MessageModel implements Serializable {
 
     public enum MessageType {
 
-        MESSAGE(), OEPN_DIALOG();
+        MESSAGE(), OEPN_DIALOG(), CLOSE_WINDOW;
 
     }
 

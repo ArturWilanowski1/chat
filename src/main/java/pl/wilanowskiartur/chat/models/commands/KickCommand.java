@@ -17,11 +17,7 @@ public class KickCommand implements Command {
                 .findAny();
 
         if (userModel.isPresent()){
-            try {
-                userModel.get().getSession().close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                userModel.get().sendCloseWindowPacket();
         }else {
             sender.sendMessagePacket("Taki user nie istnieje!");
         }

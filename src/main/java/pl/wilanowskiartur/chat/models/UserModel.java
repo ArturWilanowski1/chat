@@ -96,4 +96,17 @@ public class UserModel {
             e.printStackTrace();
         }
     }
+
+    public void sendCloseWindowPacket() {
+
+        MessageModel messageModel = new MessageModel();
+        messageModel.setMessageType(MessageModel.MessageType.CLOSE_WINDOW);
+        try {
+            session.sendMessage(new TextMessage(ChatSocket.GSON.toJson(messageModel)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
